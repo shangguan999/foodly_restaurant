@@ -84,7 +84,7 @@ class ContactController extends GetxController {
     } else {
       print("Chat id is ${from_messages.docs.first.id}");
     }
-
+/*
     if (from_messages.docs.isEmpty && to_messages.docs.isEmpty) {
       String? data = box.read("user");
       if(data==null){
@@ -137,7 +137,8 @@ class ContactController extends GetxController {
       }
       return ResponseModel(isSuccess: true,);
 
-    }
+    }*/
+    return ResponseModel(isSuccess: true);
   }
 
   Future<ResponseModel> asyncLoadSingleDriver() async {

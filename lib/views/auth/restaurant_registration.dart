@@ -10,6 +10,7 @@ import 'package:foodly_restaurant/constants/constants.dart';
 import 'package:foodly_restaurant/controllers/Image_upload_controller.dart';
 import 'package:foodly_restaurant/controllers/location_controller.dart';
 import 'package:foodly_restaurant/controllers/restaurant_controller.dart';
+import 'package:foodly_restaurant/models/environment.dart';
 import 'package:foodly_restaurant/models/restaurant_request.dart';
 import 'package:foodly_restaurant/views/auth/widgets/email_textfield.dart';
 import 'package:get/get.dart';
@@ -52,7 +53,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
   void _onSearchChanged(String searchQuery) async {
     if (searchQuery.isNotEmpty) {
       final url = Uri.parse(
-          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$searchQuery&key=$googleApiKey');
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$searchQuery&key=${Environment.googleApiKey}');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -69,7 +70,7 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
 
   void _getPlaceDetail(String placeId) async {
     final detailUrl = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$googleApiKey');
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=${Environment.googleApiKey}');
     final detailResponse = await http.get(detailUrl);
 
     if (detailResponse.statusCode == 200) {
@@ -115,42 +116,43 @@ class _RestaurantRegistrationState extends State<RestaurantRegistration> {
     }
   }
 
-void _onMarkerDragEnd(LatLng newPosition) async {
-  setState(() {
-    _selectedLocation = newPosition;
-  });
-
-  final reverseGeocodeUrl = Uri.parse(
-      'https://maps.googleapis.com/maps/api/geocode/json?latlng=${newPosition.latitude},${newPosition.longitude}&key=$googleApiKey');
-
-  final response = await http.get(reverseGeocodeUrl);
-
-  if (response.statusCode == 200) {
-    final responseBody = json.decode(response.body);
-
-    // Extracting the formatted address
-    final address = responseBody['results'][0]['formatted_address'];
-
-    // Extracting the postal code
-    String postalCode = "";
-    final addressComponents = responseBody['results'][0]['address_components'];
-    for (var component in addressComponents) {
-      if (component['types'].contains('postal_code')) {
-        postalCode = component['long_name'];
-        break;
-      }
-    }
-
-    // Update the state with the new address and postal code
+  void _onMarkerDragEnd(LatLng newPosition) async {
     setState(() {
-      _searchController.text = address;
-      _postalCodeRes.text = postalCode;
+      _selectedLocation = newPosition;
     });
-  } else {
-    // Handle the error or no result case
-    print('Failed to fetch address');
+
+    final reverseGeocodeUrl = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${newPosition.latitude},${newPosition.longitude}&key=${Environment.googleApiKey}');
+
+    final response = await http.get(reverseGeocodeUrl);
+
+    if (response.statusCode == 200) {
+      final responseBody = json.decode(response.body);
+
+      // Extracting the formatted address
+      final address = responseBody['results'][0]['formatted_address'];
+
+      // Extracting the postal code
+      String postalCode = "";
+      final addressComponents =
+          responseBody['results'][0]['address_components'];
+      for (var component in addressComponents) {
+        if (component['types'].contains('postal_code')) {
+          postalCode = component['long_name'];
+          break;
+        }
+      }
+
+      // Update the state with the new address and postal code
+      setState(() {
+        _searchController.text = address;
+        _postalCodeRes.text = postalCode;
+      });
+    } else {
+      // Handle the error or no result case
+      print('Failed to fetch address');
+    }
   }
-}
 
   String restaurantAddress = "";
   final TextEditingController _title = TextEditingController();
@@ -393,7 +395,6 @@ void _onMarkerDragEnd(LatLng newPosition) async {
                   SizedBox(
                     height: 20.h,
                   ),
-                 
                   EmailTextField(
                     hintText: "Address",
                     controller: _searchController,
@@ -413,11 +414,24 @@ void _onMarkerDragEnd(LatLng newPosition) async {
                     onTap: () {
                       String owner = box.read("userId");
                       String ownerId = jsonDecode(owner);
-
+                      print("${_selectedLocation}");
+                      print("Registration fields are ${_title.text},"
+                          "\n"
+                          " ${_time.text}"
+                          "\n"
+                          " ${_postalCodeRes.text}"
+                          "\n"
+                          " ${_searchController.text}"
+                          "\n"
+                          " ${imageUploader.logoUrl}"
+                          "\n"
+                          " ${imageUploader.coverUrl}"
+                          "\n",
+                          );
                       if (_title.text.isNotEmpty &&
                           _time.text.isNotEmpty &&
-                         _postalCodeRes.text.isNotEmpty&&
-                         _searchController.text.isNotEmpty &&
+                          _postalCodeRes.text.isNotEmpty &&
+                          _searchController.text.isNotEmpty &&
                           imageUploader.logoUrl.isNotEmpty &&
                           imageUploader.coverUrl.isNotEmpty &&
                           _selectedLocation != null) {

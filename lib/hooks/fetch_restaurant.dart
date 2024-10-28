@@ -39,8 +39,9 @@ FetchRestaurantData fetchRestaurant(
       } else {
         appiError.value = apiErrorFromJson(response.body);
       }
-    } catch (e) {
-      debugPrint(e.toString());
+    } catch (e, stacktrace) {
+      debugPrint("restaurant error ${e.toString()}");
+      debugPrint("restaurant error ${stacktrace.toString()}");
     } finally {
       isLoading.value = false;
     }

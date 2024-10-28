@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:foodly_restaurant/common/app_style.dart';
 import 'package:foodly_restaurant/common/common_appbar.dart';
 import 'package:foodly_restaurant/common/custom_btn.dart';
+import 'package:foodly_restaurant/common/custom_dialogue_dbestech.dart';
 import 'package:foodly_restaurant/common/reusable_text.dart';
 import 'package:foodly_restaurant/common/shimmers/foodlist_shimmer.dart';
 import 'package:foodly_restaurant/common/statistics.dart';
@@ -38,6 +41,7 @@ class _WalletPageState extends State<WalletPage> {
     final controller = Get.put(LoginController());
     final payoutController = Get.put(PayoutCotroller());
     String id = box.read('restaurantId');
+
     RestaurantResponse? restaurant = controller.getRestuarantData(id);
 
     final data = fetchRestaurant(id);
@@ -96,8 +100,9 @@ class _WalletPageState extends State<WalletPage> {
                     processingOrders: processingOrders,
                     revenueTotal: revenueTotal,
                   ),
+
                   const Divider(),
-                  payout.isEmpty
+                  (payout.isEmpty||payout[0].status=="completed")
                       ? const SizedBox.shrink()
                       : Column(
                     children: [
@@ -128,7 +133,27 @@ class _WalletPageState extends State<WalletPage> {
                     btnWidth: width,
                     text: "Request Payout",
                     onTap: () {
-                      controller.setRequest = !controller.payout;
+
+                      if(payout.isNotEmpty){
+
+                        if(payout[0].status=="pending"){
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return CustomDialogDbestech(title: "Pending payout", description: "You already submitted a payout request make sure you have that first.",
+                                  closeButtonText: "Cancel", okButtonText: "Ok", onOkPressed: (){
+
+                                  });
+                            },
+                          );
+                        }else{
+                          controller.setRequest = !controller.payout;
+
+                        }
+                      }else{
+                        controller.setRequest = !controller.payout;
+
+                      }
                     },
                     color: kSecondary,
                   ),
@@ -191,42 +216,47 @@ class _WalletPageState extends State<WalletPage> {
                         SizedBox(
                           height: 20.h,
                         ),
-                        CustomButton(
-                          text: "Submit Payout",
-                          color: kPrimary,
-                          radius: 0,
-                          onTap: () {
-                            PayoutRequest payout = PayoutRequest(
-                                restaurant: id,
-                                amount: amount.text,
-                                accountNumber: account.text,
-                                accountName: name.text,
-                                accountBank: bank.text,
-                                method: "bank_transfer");
+                        Obx((){
+                          return Get.find<PayoutCotroller>().isLoading==false?CustomButton(
+                            text: "Submit Payout",
+                            color: kPrimary,
+                            radius: 10,
+                            onTap: () {
+                              PayoutRequest payout = PayoutRequest(
+                                  restaurant: id,
+                                  amount: amount.text,
+                                  accountNumber: account.text,
+                                  accountName: name.text,
+                                  accountBank: bank.text,
+                                  method: "bank_transfer");
+                              String data = payoutRequestToJson(payout);
 
-                            String data = payoutRequestToJson(payout);
+                              double amountRequested =
+                              double.parse(amount.text);
+                              final double amountsRemain= revenueTotal;
 
-                            double amountDouble =
-                            double.parse(amount.text);
+                              const double epsilon = 0.00001;
 
-                            if (amountDouble >
-                                (revenueTotal - revenueTotal * 0.1)) {
-                              // insufficient amount
-                              insufficientFunds(context);
-                            } else {
-                              payoutController.payout(data, refetch);
-                              controller.setRequest = !controller.payout;
-                              amount.text = '';
-                              name.text = '';
-                              bank.text = '';
-                              account.text = '';
-                            }
-                          },
-                        )
+                              if (amountRequested - amountsRemain > epsilon) {
+                                // insufficient amount
+                                insufficientFunds(context);
+                              } else {
+                                payoutController.payout(data, refetch);
+                                controller.setRequest = !controller.payout;
+                                amount.text = '';
+                                name.text = '';
+                                bank.text = '';
+                                account.text = '';
+                              }
+                            },
+                          ):const Center(child: CircularProgressIndicator());
+                        }),
+
                       ],
                     )
                         : const SizedBox.shrink(),
                   ),
+
                 ],
               ),
             ),
@@ -239,25 +269,12 @@ class _WalletPageState extends State<WalletPage> {
 
 Future<dynamic> insufficientFunds(BuildContext context) {
   return showDialog(
+
     context: context,
-    builder: (context) => AlertDialog(
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Close'),
-        ),
-      ],
-      title: ReusableText(
-          text: 'Withdrawal Denied',
-          style: appStyle(kFontSizeBodyRegular, kDark, FontWeight.bold)),
-      contentPadding: const EdgeInsets.all(20.0),
-      content: Text(
-          'We regret to inform you that your withdrawal request cannot be processed at this time due to an insufficient account balance. To ensure a smooth transaction process, we kindly ask you to review your current balance and attempt the withdrawal once sufficient funds are available. Your understanding and cooperation are greatly appreciated, and we are here to assist with any further inquiries or support you may need regarding your account or this matter.',
-          textAlign: TextAlign.justify,
-          style: appStyle(kFontSizeBodySmall, kDark, FontWeight.normal)),
-    ),
+    builder: (context) => CustomDialogDbestech(
+        title: "Payout balance",
+        description: "You are asking for more what you have earned so far. Double check your withdrawable.",
+        closeButtonText: "Cancel", okButtonText: "ok", onOkPressed: (){}),
   );
 }
 

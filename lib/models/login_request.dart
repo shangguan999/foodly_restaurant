@@ -13,10 +13,17 @@ class LoginRequest {
         required this.password,
     });
 
-    factory LoginRequest.fromJson(Map<String, dynamic> json) => LoginRequest(
-        email: json["email"],
-        password: json["password"],
-    );
+    factory LoginRequest.fromJson(Map<String, dynamic> json){
+     try{
+         return LoginRequest(
+             email: json["email"],
+             password: json["password"],
+         );
+     }catch(e){
+         print("Error parsing login : $e");
+         throw Exception("Failed to parse login JSON");
+     }
+    }
 
     Map<String, dynamic> toJson() => {
         "email": email,

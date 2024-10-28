@@ -3,6 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:foodly_restaurant/common/entities/user.dart';
+import 'package:foodly_restaurant/common/services/auth_services_dbestech.dart';
+import 'package:foodly_restaurant/common/services/firebase_services_dbestech.dart';
+import 'package:foodly_restaurant/common/utils/show_snackbar.dart';
 import 'package:foodly_restaurant/constants/constants.dart';
 import 'package:foodly_restaurant/controllers/login_response.dart';
 import 'package:foodly_restaurant/controllers/notifications_controller.dart';
@@ -38,16 +41,8 @@ class LoginController extends GetxController {
   void loginFunc(String model, LoginRequest login) async {
     setLoading = true;
 
-    var url = Uri.parse('${Environment.appBaseUrl}/login');
-
     try {
-      var response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: model,
-      );
+      var response = await AuthServiceDbestech.login(model);
 
       if (response.statusCode == 200) {
         LoginResponse data = loginResponseFromJson(response.body);
@@ -90,7 +85,8 @@ class LoginController extends GetxController {
             backgroundColor: kPrimary,
             icon: const Icon(Ionicons.fast_food_outline));
 
-
+        FirebaseServicesDbestech().handleFirestoreUser(userId, login.email);
+        /*
         var userbase = await db.collection("users").withConverter(
           fromFirestore: UserData.fromFirestore,
           toFirestore: (UserData userdata, options)=>userdata.toFirestore(),
@@ -122,22 +118,14 @@ class LoginController extends GetxController {
         }else{
           print("docs---exist");
         }
-
+        */
       } else {
         var data = apiErrorFromJson(response.body);
-
-        Get.snackbar(data.message, "Failed to login, please try again",
-            colorText: kLightWhite,
-            backgroundColor: kRed,
-            icon: const Icon(Icons.error));
+        handleApiError(data.message);
       }
     } catch (e) {
       setLoading = false;
-
-      Get.snackbar(e.toString(), "Failed to login, please try again",
-          colorText: kLightWhite,
-          backgroundColor: kRed,
-          icon: const Icon(Icons.error));
+      handleApiError(e.toString());
     } finally {
       setLoading = false;
     }

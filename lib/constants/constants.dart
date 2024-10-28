@@ -2,8 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-String googleApiKey = 'AIzaSyC8naF0AUbEMsmLCFzD3O_Mw2qezpm2P7w';
-
 // Color Constants
 const kPrimary = Color(0xFF30b9b2);
 const kPrimaryLight = Color(0xFF40F3EA);

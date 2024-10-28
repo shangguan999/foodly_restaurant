@@ -4,7 +4,7 @@ description: A new Flutter project.
 
 publish_to: none
 
-version: 1.0.0+1
+version: 3.3.4+1
 
 environment:
   sdk: '>=3.1.1 <4.0.0'
@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  google_maps_flutter: ^2.5.0
+  google_maps_flutter: ^2.9.0
   flutter_polyline_points: ^2.0.0
   geolocator: ^7.0.3
   geocoding: ^2.0.0

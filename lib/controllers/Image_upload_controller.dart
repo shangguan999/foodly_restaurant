@@ -3,6 +3,7 @@
 
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:foodly_restaurant/common/utils/show_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -115,7 +116,8 @@ class ImageUploadController extends GetxController {
             .putFile(logoFile.value!);
         logoUrl = await snapshot.ref.getDownloadURL();
       } catch (e) {
-        debugPrint("Error uploading");
+        showCustomSnackBar(e.toString());
+        debugPrint("Error uploading ${e.toString()}");
       }
     } else if (type == "cover") {
       if (coverFile.value == null) return;

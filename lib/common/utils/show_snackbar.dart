@@ -17,3 +17,7 @@ void showCustomSnackBar(String message, {bool isError = true, String title="Erro
       backgroundColor: isError?kSecondary:kOffWhite
   );
 }
+
+void handleApiError(String message) {
+  showCustomSnackBar(message);
+}

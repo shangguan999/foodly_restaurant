@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodly_restaurant/common/app_style.dart';
 import 'package:foodly_restaurant/common/custom_btn.dart';
+import 'package:foodly_restaurant/common/utils/show_snackbar.dart';
+import 'package:foodly_restaurant/common/utils/validator.dart';
 import 'package:foodly_restaurant/constants/constants.dart';
 import 'package:foodly_restaurant/controllers/registration_controller.dart';
 import 'package:foodly_restaurant/models/registration.dart';
@@ -140,6 +142,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             color: kPrimary,
                             text: "R E G I S T E R",
                             onTap: () {
+
+                              // Validation
+                              String? usernameError = ValidationUtils.validateUsername(_usernameController.text);
+                              String? emailError = ValidationUtils.validateEmail(_emailController.text);
+                              String? passwordError = ValidationUtils.validatePassword(_passwordController.text);
+
+                              if (usernameError != null) {
+                                showCustomSnackBar(usernameError);
+                                return;
+                              }
+
+                              if (emailError != null) {
+                                showCustomSnackBar(emailError);
+                                return;
+                              }
+
+                              if (passwordError != null) {
+                                showCustomSnackBar(passwordError);
+                                return;
+                              }
+
                               Registration model = Registration(
                                   username: _usernameController.text,
                                   email: _emailController.text,

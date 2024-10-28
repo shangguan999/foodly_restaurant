@@ -29,10 +29,11 @@ FetchHook useFetchPicked(String query) {
     String token = box.read('token');
     String accessToken = jsonDecode(token);
     String? restaurant = box.read('restaurantId');
+
     isLoading.value = true;
     try {
       Uri url = Uri.parse(
-          '${Environment.appBaseUrl}/api/orders/orderslist/$restaurant?status=$query');
+          '${Environment.appBaseUrl}/api/orders/get-restaurant-data/$restaurant?status=$query');
 
       final response = await http.get(
         url,

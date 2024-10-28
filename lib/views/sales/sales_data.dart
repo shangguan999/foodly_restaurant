@@ -12,7 +12,7 @@ class SalesData extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hookResult = useFetchPicked("delivered");
+    final hookResult = useFetchPicked("Delivered");
     List<ReadyOrders>? orders = hookResult.data;
     final isLoading = hookResult.isLoading;
 

@@ -11,12 +11,25 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 class PayoutCotroller extends GetxController {
+
+  RxBool _isLoading = false.obs;
+  get isLoading=>_isLoading.value;
+  set setIsLoading(bool loading)=>_isLoading.value=loading;
+
   final box = GetStorage();
   void payout(String data, Function? refetch) async {
     String token = box.read('token');
     String accessToken = jsonDecode(token);
+    String? restaurantId = box.read('restaurantId');
+    _isLoading.value=true;
+    if(restaurantId==null){
+      _isLoading.value=false;
+      return null;
+    }else{
+      print("restaurant id ${restaurantId}");
+    }
 
-    var url = Uri.parse('${Environment.appBaseUrl}/api/restaurant/payout');
+    var url = Uri.parse('${Environment.appBaseUrl}/api/restaurant/payout/$restaurantId');
 
     try {
       var response = await http.post(
@@ -27,19 +40,30 @@ class PayoutCotroller extends GetxController {
         },
         body: data
       );
-
-
+      var apiResponse = successResponseFromJson(response.body);
       if (response.statusCode == 201) {
-        var data = successResponseFromJson(response.body);
+
         refetch!();
         Get.snackbar(
-            data.message, "Check you email for updates on the progress ",
+            apiResponse.message, "Check you email for updates on the progress ",
             colorText: kLightWhite,
             backgroundColor: kPrimary,
             icon: const Icon(SimpleLineIcons.bubbles));
+        _isLoading.value=false;
+      }else{
+        Get.snackbar(
+            apiResponse.message
+            , "Check you email for updates on the progress ",
+            colorText: kLightWhite,
+            backgroundColor: kPrimary,
+            icon: const Icon(SimpleLineIcons.bubbles));
+        _isLoading.value=false;
       }
     } catch (e) {
+
       debugPrint(e.toString());
+      _isLoading.value=false;
     }
   }
 }
+

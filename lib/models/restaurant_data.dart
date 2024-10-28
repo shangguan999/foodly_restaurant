@@ -32,7 +32,7 @@ class Statistics {
         latestPayout: List<LatestPayout>.from(json["latestPayout"].map((x) => LatestPayout.fromJson(x))),
         ordersTotal: json["ordersTotal"],
         cancelledOrders: json["cancelledOrders"],
-        revenueTotal: json["revenueTotal"],
+        revenueTotal: json["revenueTotal"].toDouble(),
         processingOrders: json["processingOrders"],
         restaurantToken: RestaurantToken.fromJson(json["restaurantToken"]),
     );
@@ -60,7 +60,7 @@ class Data {
     final bool isAvailable;
     final String code;
     final String logoUrl;
-    final int rating;
+    final double rating;
     final String ratingCount;
     final String verification;
     final String verificationMessage;
@@ -97,7 +97,7 @@ class Data {
         isAvailable: json["isAvailable"],
         code: json["code"],
         logoUrl: json["logoUrl"],
-        rating: json["rating"],
+        rating: json["rating"].toDouble(),
         ratingCount: json["ratingCount"],
         verification: json["verification"],
         verificationMessage: json["verificationMessage"],

@@ -21,7 +21,7 @@ class RestaurantResponse {
     final bool isAvailable;
     final String code;
     final String logoUrl;
-    final int rating;
+    final double rating;
     final String ratingCount;
     final String verification;
     final String verificationMessage;
@@ -45,24 +45,35 @@ class RestaurantResponse {
         required this.verificationMessage,
     });
 
-    factory RestaurantResponse.fromJson(Map<String, dynamic> json) => RestaurantResponse(
-        coords: Coords.fromJson(json["coords"]),
-        id: json["_id"],
-        title: json["title"],
-        time: json["time"],
-        imageUrl: json["imageUrl"],
-        foods: List<dynamic>.from(json["foods"].map((x) => x)),
-        pickup: json["pickup"],
-        delivery: json["delivery"],
-        owner: json["owner"],
-        isAvailable: json["isAvailable"],
-        code: json["code"],
-        logoUrl: json["logoUrl"],
-        rating: json["rating"],
-        ratingCount: json["ratingCount"],
-        verification: json["verification"],
-        verificationMessage: json["verificationMessage"],
-    );
+    factory RestaurantResponse.fromJson(Map<String, dynamic> json){
+
+        try{
+            return RestaurantResponse(
+                coords: Coords.fromJson(json["coords"]),
+                id: json["_id"],
+                title: json["title"],
+                time: json["time"],
+                imageUrl: json["imageUrl"],
+                foods: List<dynamic>.from(json["foods"].map((x) => x)),
+                pickup: json["pickup"],
+                delivery: json["delivery"],
+                owner: json["owner"],
+                isAvailable: json["isAvailable"],
+                code: json["code"],
+                logoUrl: json["logoUrl"],
+                rating: json["rating"].toDouble(),
+                ratingCount: json["ratingCount"],
+                verification: json["verification"],
+                verificationMessage: json["verificationMessage"],
+            );
+        }catch (e, stacktrace) {
+            // Print detailed error message with field information
+            print("Error parsing response from restaurant item."
+                " Exception: $e\nStacktrace: $stacktrace");
+            throw Exception("Error parsing response from restaurant item: $e");
+        }
+
+    }
 
     Map<String, dynamic> toJson() => {
         "coords": coords.toJson(),

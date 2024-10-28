@@ -11,7 +11,9 @@ import 'package:foodly_restaurant/common/row_text.dart';
 import 'package:foodly_restaurant/constants/constants.dart';
 import 'package:foodly_restaurant/controllers/foods_controller.dart';
 import 'package:foodly_restaurant/models/foods.dart';
+import 'package:foodly_restaurant/views/food/edit_food_page.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class FoodPage extends StatefulWidget {
   const FoodPage({super.key, required this.food});
@@ -130,7 +132,9 @@ class _FoodPageState extends State<FoodPage> {
                         btnWidth: width / 2.9,
                         radius: 30,
                         color: kPrimary,
-                        onTap: () {},
+                        onTap: () {
+                          Get.to(EditFoodPage(food: widget.food,));
+                        },
                         text: "Edit Food"))
               ],
             ),
@@ -260,9 +264,64 @@ class _FoodPageState extends State<FoodPage> {
               ),
             ),
             SizedBox(
-              height: 40.h,
+              height: 10.h,
             ),
 
+
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ReusableText(
+                      text: 'Created At:',
+                      style: appStyle(kFontSizeBodyLarge, kDark, FontWeight.w600)),
+                  ReusableText(
+                      text: " ${widget.food.createdAt != null ? DateFormat('yyyy-MM-dd').format(widget.food.createdAt!) : 'N/A'}",
+                      style: appStyle(kFontSizeBodyLarge, kPrimary, FontWeight.w600)),
+                ],
+              ),
+            ),
+
+            SizedBox(
+              height: 10.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ReusableText(
+                      text: 'Updated At:',
+                      style: appStyle(kFontSizeBodyLarge, kDark, FontWeight.w600)),
+                  ReusableText(
+                      text: " ${widget.food.updatedAt != null ? DateFormat('yyyy-MM-dd').format(widget.food.updatedAt!) : 'N/A'}",
+                      style: appStyle(kFontSizeBodyLarge, kPrimary, FontWeight.w600)),
+
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ReusableText(
+                      text: "Status",
+                      style: appStyle(kFontSizeBodyLarge, kDark, FontWeight.w600)),
+                  ReusableText(
+                      text: widget.food.verified==false?"being verified":"fine",
+                      style: appStyle(kFontSizeBodyLarge, kPrimary, FontWeight.w600)),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 40.h,
+
+            ),
             Padding(
               padding:  EdgeInsets.symmetric(horizontal:8.h),
               child: CustomButton(text: "D E L E T E", onTap: () {

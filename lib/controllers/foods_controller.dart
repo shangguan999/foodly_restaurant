@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:foodly_restaurant/common/services/dbtech_edit_food_services.dart';
 import 'package:foodly_restaurant/constants/constants.dart';
 import 'package:foodly_restaurant/models/api_error.dart';
 import 'package:foodly_restaurant/models/environment.dart';
@@ -18,6 +19,23 @@ class FoodsController extends GetxController {
   final box = GetStorage();
 
   var currentPage = 0.obs;
+  RxBool _promotion = false.obs;
+  get promotion=>_promotion.value;
+  set setPromotion(val)=>_promotion.value=val;
+
+
+  RxDouble _promotionPrice = 0.0.obs;
+  get promotionPrice => _promotionPrice.value;
+  set setPromotionPrice(val)=>_promotionPrice.value=val;
+  // Reactive variable to store the date range
+  var startDate = DateTime.now().obs;
+  var endDate = DateTime.now().obs;
+
+  // Method to update the date range
+  void updateDateRange(DateTime start, DateTime end) {
+    startDate.value = start;
+    endDate.value = end;
+  }
 
   void updatePage(int index) {
     currentPage.value = index;
@@ -126,4 +144,38 @@ class FoodsController extends GetxController {
       setLoading = false;
     }
   }
+
+  void updateFood(String foodItemId, Map<String, dynamic> updatedFoodItem) async {
+
+    try {
+      var response= await FoodServiceDbestech().editFood(foodItemId, updatedFoodItem);
+
+      if (response.statusCode == 200) {
+        var data = successResponseFromJson(response.body);
+        setLoading = false;
+        Get.snackbar(data.message, "Product successfully updated",
+            colorText: kLightWhite,
+            backgroundColor: kPrimary,
+            icon: const Icon(Icons.update));
+        Get.to(() => const HomePage(),
+            transition: Transition.fadeIn,
+            duration: const Duration(seconds: 2));
+      } else {
+        var data = apiErrorFromJson(response.body);
+
+        Get.snackbar(data.message, "Failed to update product, please try again",
+            backgroundColor: kRed, icon: const Icon(Icons.error));
+      }
+    } catch (e) {
+      setLoading = false;
+
+      Get.snackbar(e.toString(), "Failed to update product, please try again",
+          colorText: kLightWhite,
+          backgroundColor: kRed,
+          icon: const Icon(Icons.error));
+    } finally {
+      setLoading = false;
+    }
+  }
+
 }
