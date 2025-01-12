@@ -163,6 +163,7 @@ class LoginController extends GetxController {
             restaurantResponseFromJson(response.body);
         restaurantController.restaurant = restaurant;
         box.write("restaurantId", restaurant.id);
+        print("my res Id ${restaurant.id}");
         box.write("verification", restaurant.verification);
         box.write(restaurant.id, json.encode(restaurant));
 

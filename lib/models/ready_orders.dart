@@ -30,19 +30,26 @@ class ReadyOrders {
         required this.driverId,// Added field
     });
 
-    factory ReadyOrders.fromJson(Map<String, dynamic> json) => ReadyOrders(
-        id: json["_id"] ?? "",
-        userId: json["userId"] != null ? UserId.fromJson(json["userId"]) : null,
-        orderItems: List<OrderItem>.from(json["orderItems"].map((x) => OrderItem.fromJson(x))),
-        deliveryFee: json["deliveryFee"]?.toDouble(),
-        deliveryAddress: json["deliveryAddress"] != null ? DeliveryAddress.fromJson(json["deliveryAddress"]) : null,
-        orderStatus: json["orderStatus"] ?? "",
-        restaurantId: json["restaurantId"] != null ? RestaurantId.fromJson(json["restaurantId"]) : null,
-        restaurantCoords: json["restaurantCoords"] != null ? List<double>.from(json["restaurantCoords"].map((x) => x?.toDouble())) : null,
-        recipientCoords: json["recipientCoords"] != null ? List<double>.from(json["recipientCoords"].map((x) => x?.toDouble())) : null,
-        orderDate: json["orderDate"] != null ? DateTime.parse(json["orderDate"]) : null, // Parse date
-        driverId: json["driverId"]??""
-    );
+    factory ReadyOrders.fromJson(Map<String, dynamic> json){
+        try{
+         return   ReadyOrders(
+                id: json["_id"] ?? "",
+                userId: json["userId"] != null ? UserId.fromJson(json["userId"]) : null,
+                orderItems: List<OrderItem>.from(json["orderItems"].map((x) => OrderItem.fromJson(x))),
+                deliveryFee: json["deliveryFee"]?.toDouble(),
+                deliveryAddress: json["deliveryAddress"] != null ? DeliveryAddress.fromJson(json["deliveryAddress"]) : null,
+                orderStatus: json["orderStatus"] ?? "",
+                restaurantId: json["restaurantId"] != null ? RestaurantId.fromJson(json["restaurantId"]) : null,
+                restaurantCoords: json["restaurantCoords"] != null ? List<double>.from(json["restaurantCoords"].map((x) => x?.toDouble())) : null,
+                recipientCoords: json["recipientCoords"] != null ? List<double>.from(json["recipientCoords"].map((x) => x?.toDouble())) : null,
+                orderDate: json["orderDate"] != null ? DateTime.parse(json["orderDate"]) : null, // Parse date
+                driverId: json["driverId"]??""
+            );
+        }catch(e, trace){
+            print("Trace $trace");
+            throw Exception("Error in fetching places orders");
+        }
+    }
 
     Map<String, dynamic> toJson() => {
         "_id": id,

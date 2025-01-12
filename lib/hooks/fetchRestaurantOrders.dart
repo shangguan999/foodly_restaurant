@@ -33,7 +33,7 @@ FetchHook useFetchPicked(String query) {
     isLoading.value = true;
     try {
       Uri url = Uri.parse(
-          '${Environment.appBaseUrl}/api/orders/get-restaurant-data/$restaurant?status=$query');
+          '${Environment.appBaseUrl}/api/orders/restaurant_orders/$restaurant?status=$query');
 
       final response = await http.get(
         url,
@@ -50,7 +50,8 @@ FetchHook useFetchPicked(String query) {
           orders.value = decodedOrders;
 
           if (orders.value == null || orders.value!.isEmpty) {
-            //appSnackBar("No orders found");
+            appSnackBar("No orders found for this restaruant");
+
           } else {
             print("Orders: ${orders.value!.length}");
             isLoading.value = false;
