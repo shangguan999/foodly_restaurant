@@ -21,8 +21,7 @@ double hieght = 926.h;
 double width = 428.w;
 
 // API URL
-const String appBaseUrl = "http://10.0.2.2:6004";
-
+const String appBaseUrl = "http://127.0.0.1:6004";
 // Font Size Constants
 const double kFontSizeH1 = 32.0; // Headline 1
 const double kFontSizeH2 = 28.0; // Headline 2
