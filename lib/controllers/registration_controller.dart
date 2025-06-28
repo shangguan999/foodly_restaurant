@@ -10,6 +10,8 @@ import 'package:foodly_restaurant/models/sucess_model.dart';
 import 'package:foodly_restaurant/views/auth/login_page.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:foodly_restaurant/models/environment.dart';
+
 class RegistrationController extends GetxController {
   RxBool _isLoading = false.obs;
 

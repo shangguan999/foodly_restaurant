@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:foodly_restaurant/models/environment.dart';
 
 class Environment {
   static String get fileName {
